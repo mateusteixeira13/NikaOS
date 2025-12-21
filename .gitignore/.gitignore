@@ -1,0 +1,7 @@
+# Ignorar arquivos ISO e SYS
+*.iso
+*.sys
+
+# Ignorar pastas
+iso/
+obj/
