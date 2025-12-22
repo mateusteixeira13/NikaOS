@@ -124,6 +124,27 @@ static void itoa(int v, char *buf, int base){
 	}
 }
 
+int atoi(const char* str) {
+    int result = 0;
+    int sign = 1;
+
+    if(*str == '-') {
+        sign = -1;
+        str++;
+    } else if(*str == '+') {
+        str++;
+    }
+
+    while(*str) {
+        if(*str < '0' || *str > '9') break; 
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+
+    return result * sign;
+}
+
+
 int kprintf(const char *fmt, ...){
 	va_list args;
 	va_start(args, fmt);

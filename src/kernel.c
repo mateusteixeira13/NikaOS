@@ -12,13 +12,18 @@
 #include <kbd.h>
 #include <gdt.h>
 #include <bshell.h>
+#include <pit.h>
+#include <vbe.h>
 
 typedef enum{
     KERNEL_SUCCESS,
     KERNEL_FAULT
 } KernelStatus;
 
-#define RELEASE "v0.52b"
+const char kernel_version[] = "nikakrnl-generic:052c";
+int user_choice = 0;
+
+extern void init_graphical_test();
 
 /**
  * A kernel initialization function
@@ -29,7 +34,7 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
     InitStdio();
 
     if(Hal_init() == HAL_ERROR){
-        Stdout("Error to initializing the HAL\n");
+        panic("Error to initializing the HAL\n");
         return KERNEL_FAULT;
     }
 
@@ -37,8 +42,10 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
     idt_init();
     pic_init();
 
+    pit_init();
+
     if(pmm_init(mbd, magic) != 0){
-       Stdout("Error to initialize the PMM\n");
+       panic("Error to initialize the PMM\n");
        return KERNEL_FAULT;
     }
 
@@ -68,16 +75,27 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
  */
 void kmain(multiboot_info_t* mbd, uint32_t magic){ 
     if(kernel_init(mbd, magic) == KERNEL_FAULT){
-        Stdout("[SYSBOOT] Fault to init kernel\n");
+        panic("[SYSBOOT] Fault to init kernel\n");
         return;
     }
 
-    Stdout_color("\nNika Kernel booted!\n", 0x0B);
-    Stdout("Nika Kernel info:\n");
-    kprintf("Version: %s", RELEASE);
+    INFO("Kernel Booted!\n");
+
+    ksleep(1000);
+
+    /** 
+     * Initialize a basic integrated shell
+     */
 
     __bshell();
-   
+
+    //TODO: I don't know why this is don't work! Please if you know help me
+    /*
+    gd_init(mbd, magic);
+
+    init_graphical_test();
+    */
+
     for(;;){
         schedule();
         Halt();

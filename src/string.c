@@ -13,3 +13,26 @@ char *strncpy(char *dest, const char *src, size_t n){
     for(; i < n; i++) dest[i] = 0;
     return dest;
 }
+
+char* strcpy(char* dest, const char* src) {
+    char* ptr = dest;
+    while(*src) {
+        *ptr++ = *src++;
+    }
+    *ptr = '\0'; 
+    return dest;
+}
+
+char* strchr(const char* str, char c) {
+    while(*str) {
+        if(*str == c) return (char*)str;
+        str++;
+    }
+    return NULL;
+}
+
+size_t strlen(const char* str) {
+    size_t len = 0;
+    while(str[len]) len++;
+    return len;
+}
