@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <pic.h>
-#include <asm.h>
+#include <hal.h>
 
 /**
  * OSDev
@@ -28,53 +28,48 @@
 #define PIC_READ_ISR 0x0b
 
 void pic_remap(int offset1, int offset2){
-    outb(PIC1_CMD, ICW1_INIT | ICW1_ICW4);
-    io_wait();
-    outb(PIC2_CMD, ICW1_INIT | ICW1_ICW4);
-    io_wait();
-    outb(PIC1_DATA, offset1);
-    io_wait();
-    outb(PIC2_DATA, offset2);
-    io_wait();
-    outb(PIC1_DATA, 1 << CASCADE_IRQ);
-    io_wait();
-    outb(PIC2_DATA, 2);
-    io_wait();
-    outb(PIC1_DATA, ICW4_8086);
-    io_wait();
-    outb(PIC2_DATA, ICW4_8086);
-    io_wait();
-
-
-    // This cause a Triple Fault:
-    // outb(PIC1_DATA, 0);  
-    // outb(PIC2_DATA, 0);
+    x86write(PIC1_CMD, ICW1_INIT | ICW1_ICW4);
+    x86IO_wait();
+    x86write(PIC2_CMD, ICW1_INIT | ICW1_ICW4);
+    x86IO_wait();
+    x86write(PIC1_DATA, offset1);
+    x86IO_wait();
+    x86write(PIC2_DATA, offset2);
+    x86IO_wait();
+    x86write(PIC1_DATA, 1 << CASCADE_IRQ);
+    x86IO_wait();
+    x86write(PIC2_DATA, 2);
+    x86IO_wait();
+    x86write(PIC1_DATA, ICW4_8086);
+    x86IO_wait();
+    x86write(PIC2_DATA, ICW4_8086);
+    x86IO_wait();
 
     // Now this is correct! Finally :)
-    outb(PIC1_DATA, 0xFB); 
-    outb(PIC2_DATA, 0xFF);
+    x86write(PIC1_DATA, 0xFB); 
+    x86write(PIC2_DATA, 0xFF);
 }
 
 void pic_disable(){
-    outb(PIC1_DATA, 0xFF);
-    outb(PIC2_DATA, 0xFF);
+    x86write(PIC1_DATA, 0xFF);
+    x86write(PIC2_DATA, 0xFF);
 }
 
 void pic_send_eoi(uint8_t irq){
     if(irq >= 8){
-        outb(PIC2_CMD, PIC_EOI);
+        x86write(PIC2_CMD, PIC_EOI);
     }
 
-    outb(PIC1_CMD, PIC_EOI);
+    x86write(PIC1_CMD, PIC_EOI);
 }
 
 /**
  * Helper Fuctions
  */
 static uint16_t pic_get_irq_reg(int ocw3){
-    outb(PIC1_CMD, ocw3);
-    outb(PIC2_CMD, ocw3);
-    return (inb(PIC2_CMD) << 8 | inb(PIC1_CMD));
+    x86write(PIC1_CMD, ocw3);
+    x86write(PIC2_CMD, ocw3);
+    return (x86read(PIC2_CMD) << 8 | x86read(PIC1_CMD));
 }
 
 uint16_t pic_get_irr(){

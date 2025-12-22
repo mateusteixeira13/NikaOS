@@ -1,4 +1,4 @@
-extern irq_handler ; declareted in C
+extern irq_handler
 
 %macro IRQ 2
 global irq%1
@@ -26,25 +26,21 @@ IRQ 13, 45
 IRQ 14, 46
 IRQ 15, 47
 
-
 irq_common_stub:
     pusha
-
     mov ax, ds
     push eax
     
-    ; Here load the segments of the kernel
     mov ax, 0x10
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
-
-    ; Call the handler of C
+    
     push esp
     call irq_handler
     add esp, 4
-
+    
     pop eax
     mov ds, ax
     mov es, ax
@@ -52,10 +48,9 @@ irq_common_stub:
     mov gs, ax
     
     popa
-
     add esp, 8
-
-    iret ; return
+    sti
+    iret
 
 global page_fault_stub
 extern page_fault_handler
@@ -63,14 +58,29 @@ extern page_fault_handler
 page_fault_stub:
     cli
     pushad
-
+    
+    push ds
+    push es
+    push fs
+    push gs
+    
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    
     mov eax, cr2
-    push eax        ; addr
-    push dword [esp + 36] ; error code
-
+    push eax
+    push dword [esp + 52]
     call page_fault_handler
-
     add esp, 8
+    
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    
     popad
-    sti
+    add esp, 4
     iretd

@@ -7,7 +7,9 @@ void Stdout(const char *str);
 void StdioClean_color();
 void StdioClean();
 int kprintf(const char *fmt, ...);
+void putchar(char c);
+void Stdioback(void);
 
-#define panic(str) Stdout_color(str, 0x04) 
+#define panic(str) Stdout_color(str, 0x04)
 
 #endif

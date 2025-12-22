@@ -102,7 +102,12 @@ FS_STATUS ramfs_read(const char *name, uint8_t* buf, size_t max_len){
 FS_STATUS fs_mount(const char *path, fs_ops_t *ops){
     if(mount_count >= MAX_MOUNTS){
         kprintf("fs_mount: máximo de mounts atingido!\n");
-        return -1;
+        return FAULT;
+    }
+    
+    if(fs_true != true){
+        Stdout("Ocorred a error: ROOT is not avaliable! :(\n");
+        return FAULT;
     }
 
     mounts[mount_count].path = path;
@@ -144,7 +149,7 @@ void ramfs_list(){
 
 void __initramfs(){
     ramfs_init();
-    Stdout("ROOT: FS initialized!\n");
+    Stdout("ROOT: RAMFS initialized!\n");
     Stdout("Mounting r:\n");
     ramfs_mount("r:/");
     Stdout("Mounted r: at RAM (Root dir)\n");
