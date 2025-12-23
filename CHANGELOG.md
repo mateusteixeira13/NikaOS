@@ -18,3 +18,5 @@ Second code refination
 Added keyboard, gdt
 # v0.52c:
 Added basic integrated shell, refined keyboard driver, VBE video
+# v0.52c2:
+Removed basic integrated shell, added serial, corrected the VBE, added graphical text log
