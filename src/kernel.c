@@ -1,3 +1,6 @@
+/** 
+ * I will organize this 
+*/
 #include <hal.h>
 #include <vga.h>
 #include <mem.h>
@@ -14,16 +17,14 @@
 #include <bshell.h>
 #include <pit.h>
 #include <vbe.h>
+#include <serial.h>
 
 typedef enum{
     KERNEL_SUCCESS,
     KERNEL_FAULT
 } KernelStatus;
 
-const char kernel_version[] = "nikakrnl-generic:052c";
-int user_choice = 0;
-
-extern void init_graphical_test();
+const char kernel_version[] = "nikakrnl-generic:052c2";
 
 /**
  * A kernel initialization function
@@ -33,8 +34,10 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
 
     InitStdio();
 
+    __serial();
+
     if(Hal_init() == HAL_ERROR){
-        panic("Error to initializing the HAL\n");
+        gdl_print("Error to initializing the HAL\n");
         return KERNEL_FAULT;
     }
 
@@ -45,11 +48,13 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
     pit_init();
 
     if(pmm_init(mbd, magic) != 0){
-       panic("Error to initialize the PMM\n");
+       gdl_print("Error to initialize the PMM\n");
        return KERNEL_FAULT;
     }
 
     init_pages();
+
+    gd_init(mbd, magic);
 
     heap_init();
 
@@ -67,6 +72,8 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
      */
     __initramfs();
 
+
+
     return KERNEL_SUCCESS;
 }
 
@@ -75,25 +82,11 @@ KernelStatus kernel_init(multiboot_info_t* mbd, uint32_t magic){
  */
 void kmain(multiboot_info_t* mbd, uint32_t magic){ 
     if(kernel_init(mbd, magic) == KERNEL_FAULT){
-        panic("[SYSBOOT] Fault to init kernel\n");
+        gdl_print("[SYSBOOT] Fault to init kernel\n");
         return;
     }
 
-    INFO("Kernel Booted!\n");
-
-
-    /** 
-     * Initialize a basic integrated shell
-     */
-
-    __bshell();
-
-    ksleep(1000);
-   
-    gd_init(mbd, magic);
-
-    init_graphical_test();
-
+    gdl_print("Kernel Booted!\n");
 
     for(;;){
         schedule();

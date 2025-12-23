@@ -21,8 +21,8 @@ all:
 	$(CC) $(CFLAGS) $(SRC_DIR)paging.c -o $(OBJ_DIR)paging.o
 	$(CC) $(CFLAGS) $(SRC_DIR)pf.c -o $(OBJ_DIR)pf.o
 	$(CC) $(CFLAGS) $(SRC_DIR)ramfs.c -o $(OBJ_DIR)ramfs.o
-	$(CC) $(CFLAGS) $(SRC_DIR)shell.c -o $(OBJ_DIR)shell.o
 	$(CC) $(CFLAGS) $(SRC_DIR)timer.c -o $(OBJ_DIR)timer.o
+	$(CC) $(CFLAGS) $(SRC_DIR)serial.c -o $(OBJ_DIR)serial.o
 	$(CC) $(CFLAGS) $(SRC_DIR)drivers/vbe.c -o $(OBJ_DIR)vbe.o
 	$(CC) $(CFLAGS) $(SRC_DIR)drivers/kybrd.c -o $(OBJ_DIR)kybrd.o
 	
@@ -41,8 +41,7 @@ all:
 
 	grub-mkrescue -o nika.iso iso/
 
-
-	qemu-system-i386 -cdrom nika.iso -display sdl
+	qemu-system-x86_64 -cdrom nika.iso -display sdl -serial stdio 
 
 clean:
 	rm -rf obj/* *.sys

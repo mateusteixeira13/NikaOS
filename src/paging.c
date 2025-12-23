@@ -3,6 +3,7 @@
 #include <paging.h>
 #include <fork.h>
 #include <heap.h>
+#include <serial.h>
 
 /**
  * Bro, this sucked my energy LOL .-.
@@ -31,8 +32,34 @@ void map_page(uint32_t* pd, uint32_t virt, uint32_t phys, uint32_t flags){
     
     uint32_t pt_phys = pd[pd_index] & 0xFFFFF000;
     uint32_t* pt = (uint32_t*)pt_phys;
-    
     pt[pt_index] = phys | (flags & 0xFFF) | PAGE_PRESENT;
+}
+
+
+void map_physical_region(uint32_t* pd, uint32_t phys_start, uint32_t size, uint32_t flags){
+   
+    uint32_t phys_aligned = phys_start & 0xFFFFF000;
+
+    uint32_t pages = (size + PAGE_SIZE - 1) / PAGE_SIZE;
+    pages += ((phys_start - phys_aligned) + PAGE_SIZE - 1) / PAGE_SIZE;
+    
+    for(uint32_t i = 0; i < pages; i++){
+        uint32_t addr = phys_aligned + (i * PAGE_SIZE);
+        map_page(pd, addr, addr, flags);
+    }
+}
+
+void map_framebuffer(uint32_t fb_addr, uint32_t fb_size){
+
+    uint32_t flags = PAGE_RW | PAGE_WRITE_THROUGH;
+    
+    map_physical_region(kernel_page_dir, fb_addr, fb_size, flags);
+
+    __asm__ volatile(
+        "mov %%cr3, %%eax\n"
+        "mov %%eax, %%cr3\n"
+        ::: "eax"
+    );
 }
 
 void clone_kernel_space(uint32_t *new_pd){
@@ -44,7 +71,6 @@ void clone_kernel_space(uint32_t *new_pd){
 void copy_page(uint32_t src_phys, uint32_t dst_phys){
     uint8_t *src = (uint8_t*)src_phys;
     uint8_t *dst = (uint8_t*)dst_phys;
-    
     for(int i = 0; i < PAGE_SIZE; i++){
         dst[i] = src[i];
     }
@@ -63,7 +89,6 @@ void copy_addr_space(process_t *parent, process_t *child){
         
         uint32_t *dst_pt = (uint32_t*)pmm_alloc_page();
         memset(dst_pt, 0, PAGE_SIZE);
-        
         dst_pd[pd_i] = ((uint32_t)dst_pt) | PAGE_PRESENT | PAGE_RW | PAGE_USER;
         
         for(uint32_t pt_i = 0; pt_i < 1024; pt_i++){
@@ -74,13 +99,13 @@ void copy_addr_space(process_t *parent, process_t *child){
             uint32_t dst_page = (uint32_t)pmm_alloc_page();
             
             copy_page(src_page, dst_page);
-            
             dst_pt[pt_i] = dst_page | PAGE_PRESENT | PAGE_RW | PAGE_USER;
         }
     }
 }
 
 void init_pages(){
+   
     kernel_page_dir_phys = (uint32_t) pmm_alloc_page();
     kernel_page_dir = (uint32_t*) kernel_page_dir_phys;
     
@@ -92,6 +117,7 @@ void init_pages(){
         map_page(kernel_page_dir, addr, addr, PAGE_RW);
     }
     
+    serial_printf("Activating paging...\n");
     /** 
      * Activate paging
      */
@@ -102,5 +128,7 @@ void init_pages(){
         "mov %%eax, %%cr0\n"
         :
         : "r"(kernel_page_dir_phys)
-        : "eax");
+        : "eax"
+    );
+    
 }

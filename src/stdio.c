@@ -3,6 +3,7 @@
 #include <mem.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <vbe.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25

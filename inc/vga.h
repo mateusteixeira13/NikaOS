@@ -1,6 +1,7 @@
 #ifndef VGA_H
 #define VGA_H
 
+
 void InitStdio();
 void Stdout_color(const char *str, unsigned int color);
 void Stdout(const char *str);

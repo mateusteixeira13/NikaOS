@@ -27,9 +27,9 @@ forced to be within the first 8 KiB of the kernel file.
 
 /* VIDEO fields (required because bit 2 is set) */
 .long 0        /* mode_type: 0 = linear framebuffer */
-.long 1024     /* width: 1024 pixels (or 0 for GRUB default) */
-.long 768      /* height: 768 pixels (or 0 for GRUB default) */
-.long 32       /* depth: 32 bits per pixel (or 0 for GRUB default) */
+.long 1024     /* width: 1024 pixels */
+.long 768      /* height: 768 pixels */
+.long 32       /* depth: 32 bits per pixel */
 /*
 The multiboot standard does not define the value of the stack pointer register
 (esp) and it is up to the kernel to provide a stack. This allocates room for a
@@ -98,6 +98,7 @@ _start:
 	*/
 	push %eax        # magic number
 	push %ebx        # multiboot_info_t*
+
 	call kmain
 
 	/*

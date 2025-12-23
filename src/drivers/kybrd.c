@@ -4,10 +4,7 @@
 #include <hal.h>
 #include <pic.h>
 #include <stddef.h>
-#include <bshell.h>
-
-extern char cmdbuf[];
-extern size_t cmd_len;
+#include <serial.h>
 
 /**
  * A basic keyboard driver
@@ -42,19 +39,10 @@ void kybrd_handler(registers_t *r){
     }
 
     if(k == '\n'){
-        cmdbuf[cmd_len] = '\0';
-        shell_exec(cmdbuf);
-        cmd_len = 0;
-        putchar('\n');
-        Stdout("user/ ~ ");
         return;
     }
    
     if (k == '\b') {
-        if(cmd_len > 0){
-            cmd_len--;
-            Stdioback();
-        }
         return;
     }
 
@@ -62,10 +50,6 @@ void kybrd_handler(registers_t *r){
         return;
     }
 
-    if (cmd_len < 249){
-        cmdbuf[cmd_len++] = k;   
-        putchar(k);
-    }
 }
 
 void kybrd_init(){

@@ -5,6 +5,10 @@
 #include <vga.h>
 #include <stdbool.h>
 #include <ramfs.h>
+#include <vbe.h>
+
+#define Stdout(str) gdl_print(str)
+
 
 /**
  * A simple rootfs in RAM :)
