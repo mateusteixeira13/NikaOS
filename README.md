@@ -10,7 +10,7 @@ It is **fully free software**, allowing modification and redistribution without 
 
 - Bare-metal kernel, no layers of abstraction  
 - Multiboot compatible  
-- Basic VBE/GOP support for graphics  
+- Basic VBE support for graphics  
 - Simple RAM file system support  
 - Minimal drivers included  
 - Designed for learning and experimentation  
