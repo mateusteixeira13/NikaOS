@@ -32,3 +32,10 @@ You need the following tools installed:
 
 ```bash
 sudo apt install binutils build-essential nasm
+```
+# Build
+
+For build simple run:
+```bash
+make
+```
