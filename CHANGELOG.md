@@ -1,36 +1,34 @@
-# Changelog
-
-## v0.0.1
+## v0.1.0
 - Initial version of Nika
 - Basic Physical Memory Manager (PMM)
 
-## v0.0.2
+## v0.2.0
 - Refined PMM
 - Added fork support
 - Added heap allocator
 
-## v0.0.3
+## v0.3.0
 - Improved heap
 - Added IDT, PIC and IRQ handling
 
-## v0.0.4
+## v0.3.1
 - Fixed triple fault issue
 
-## v0.0.5
+## v0.4.0
 - Added paging support
 
-## v0.0.6
+## v0.4.1
 - Kernel.c refactoring
 - Added formatted logging support
 
-## v0.0.7
+## v0.5.0
 - Major code refactoring
 - Added keyboard driver
 - Added GDT
 - Added VBE video support
 - Added basic integrated shell (later removed)
 
-## v0.0.8 – Christmas Update
+## v0.6.0 – Christmas Update
 - New directory structure
 - Added userland (non-functional)
 - Added syscall interface
